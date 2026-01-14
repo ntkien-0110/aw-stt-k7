@@ -344,16 +344,15 @@
                         if (h.status === 'ĐÚNG GIỜ') color = 'text-green-600';
                         else if (h.status === 'MUỘN') color = 'text-orange-600';
                         else if (h.status && h.status.toLowerCase().indexOf('chưa') === -1) color = 'text-indigo-600';
-                        const timeText = h.time ? `<div class="text-[11px] text-gray-500 mt-0.5">Giờ điểm danh: <span class="font-semibold">${h.time}</span></div>` : '';
                         html += `
                             <div class="p-2.5 bg-white rounded-lg border border-gray-100 shadow-sm flex justify-between items-start text-xs">
                                 <div class="flex-1 pr-2">
                                     <div class="font-bold text-gray-800 mb-0.5">Buổi ${h.session}: ${local.topic}</div>
                                     <div class="text-[11px] text-gray-400">${formatDate(local.date)}</div>
-                                    ${timeText}
                                 </div>
-                                <div class="text-right">
+                                <div class="text-right flex flex-col items-end">
                                     <div class="font-bold ${color} uppercase text-[11px]">${h.status}</div>
+                                    ${h.time ? `<div class="text-[10px] text-gray-500 font-medium mt-0.5">${h.time}</div>` : ''}
                                 </div>
                             </div>
                         `;
