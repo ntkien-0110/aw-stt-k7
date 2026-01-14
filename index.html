@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Điểm Danh Amway Starter K7</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
+        body { font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .touch-active:active { transform: scale(0.98); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen pb-10">
+
+    <!-- Header (Purple Theme) -->
+    <div class="bg-indigo-600 pt-8 pb-10 rounded-b-[2.5rem] shadow-lg text-center relative z-10">
+        
+        <div class="flex flex-col items-center justify-center mb-1">
+            <!-- Logo Container: White Horizontal Oval -->
+            <div class="bg-white px-10 py-2.5 rounded-full shadow-lg mb-3 inline-block mx-auto">
+                <img src="assets/logo.png" onerror="this.src='https://placehold.co/100x100/png?text=Logo'" alt="Logo" class="h-20 w-auto object-contain">
+            </div>
+            
+            <!-- Title Row -->
+            <div class="flex flex-row items-center justify-center gap-4 mt-1">
+                <h1 class="text-2xl font-black text-white tracking-tighter drop-shadow-md">BeeSCT</h1>
+                <div class="w-0.5 h-10 bg-white/30 rounded-full"></div>
+                <div class="text-left flex flex-col justify-center">
+                    <span class="text-xl font-black text-white uppercase tracking-tight leading-none">ĐIỂM DANH AMWAY STARTER K7</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-md mx-auto px-4 -mt-8 relative z-20 space-y-2.5">
+
+        <!-- Clock Card -->
+        <div class="bg-white rounded-2xl shadow-xl p-3.5 text-center border border-gray-100">
+            <div id="clock" class="text-4xl font-black text-gray-800 tracking-tighter mb-0.5 font-mono">--:--</div>
+            <div id="date" class="text-gray-500 text-sm font-medium capitalize">...</div>
+        </div>
+
+        <!-- Today Session Info -->
+        <div id="session-container" class="hidden">
+            <div class="rounded-xl p-2 border border-gray-100 shadow-sm flex gap-3 items-center transition-all">
+                <div id="session-badge" class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-lg flex flex-col items-center justify-center text-green-600 font-bold">
+                    <span class="text-[9px] uppercase opacity-80">Buổi</span>
+                    <span id="session-id" class="text-base leading-none">-</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-center mb-0.5">
+                        <span id="session-date" class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">--/--</span>
+                    </div>
+                    <h4 id="session-topic" class="text-base font-bold text-gray-800 line-clamp-2 truncate">...</h4>
+                    <div id="session-status" class="mt-1 text-sm font-bold"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Form -->
+        <div class="space-y-3">
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2 ml-1">Số điện thoại</label>
+                <div class="relative">
+                    <input type="tel" id="phone" placeholder="Nhập số điện thoại của bạn" 
+                        class="w-full pl-11 pr-4 py-3.5 bg-white border border-gray-300 rounded-xl text-lg text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition shadow-sm">
+                    <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="submitAttendance()" id="btn-submit"
+                class="w-full bg-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-lg touch-active flex items-center justify-center gap-2 text-lg hover:bg-indigo-700 transition">
+                <i class="fa-solid fa-check-to-slot"></i>
+                <span>ĐIỂM DANH NGAY</span>
+            </button>
+
+            <button onclick="checkHistory()" 
+                class="w-full bg-white text-gray-700 font-bold py-3.5 rounded-xl border border-gray-200 touch-active flex items-center justify-center gap-2 hover:bg-gray-50 transition shadow-sm">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <span>Lịch sử điểm danh</span>
+            </button>
+        </div>
+
+        <!-- Schedule List -->
+        <div>
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 ml-1">LỊCH TRÌNH KHÓA HỌC</h3>
+            <div class="space-y-1.5" id="schedule-list">
+                <!-- Generated by JS -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden relative z-10 p-6 text-center animate-fade-in">
+            <div id="modal-icon" class="w-16 h-16 rounded-full flex items-center justify-center text-3xl text-white shadow-lg mx-auto mb-4"></div>
+            <h3 id="modal-title" class="text-xl font-bold text-gray-900 mb-2"></h3>
+            <p id="modal-message" class="text-sm text-gray-600 mb-4"></p>
+            <div id="modal-details" class="bg-gray-50 rounded-xl p-3 mb-4 text-left text-xs space-y-1.5 hidden border border-gray-100 text-gray-700"></div>
+            <button onclick="closeModal()" class="w-full bg-gray-900 text-white font-bold py-3.5 rounded-xl">Đóng</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const SESSIONS = [
+            { id: 1, date: "2026-01-07", label: "Buổi 1", topic: "Tiềm năng thị trường & 7 bước làm Amway" },
+            { id: 2, date: "2026-01-14", label: "Buổi 2", topic: "Hoa hồng trong kinh doanh Amway" },
+            { id: 3, date: "2026-01-21", label: "Buổi 3", topic: "Personal Care & Home Care" },
+            { id: 4, date: "2026-01-28", label: "Buổi 4", topic: "Nutrilite & Buổi sáng dinh dưỡng" },
+            { id: 5, date: "2026-02-04", label: "Buổi 5", topic: "Tư duy làm chủ & Thiết lập mục tiêu" },
+            { id: 6, date: "2026-02-11", label: "Buổi 6", topic: "Lên danh sách, đặt hẹn & Xử lí từ chối" },
+            { id: 7, date: "2026-02-25", label: "Buổi 7", topic: "Kỹ năng ABC" },
+            { id: 8, date: "2026-03-04", label: "Buổi 8", topic: "PATH TO BRONZE" }
+        ];
+
+        // --- CONFIGURATION ---
+        // Thay thế URL này bằng Web App URL của bạn sau khi triển khai Google Apps Script
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwKXSemjbQwT-dj8Uop3NqAQ4rFaa9V7adaz62_7-NqW8ebkF3t3AJU9EmcEw8G1nyc/exec'; 
+        // ---------------------
+        let API_URL = SCRIPT_URL;
+
+        // --- INIT ---
+        function init() {
+            renderSchedule();
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+        window.onload = init;
+
+        // --- CLOCK & LOGIC ---
+        function updateClock() {
+            const now = new Date();
+            const options = { timeZone: 'Asia/Ho_Chi_Minh', hour12: false };
+            
+            // Clock
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').innerText = `${h}:${m}:${s}`;
+            
+            // Date
+            const dateStr = now.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric' });
+            document.getElementById('date').innerText = dateStr;
+
+            checkSession(now);
+        }
+
+        function checkSession(now) {
+            const hanoiDate = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
+            const todayStr = hanoiDate.getFullYear() + '-' + 
+                            String(hanoiDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                            String(hanoiDate.getDate()).padStart(2, '0');
+            
+            // 1. Tìm buổi học hôm nay
+            let session = SESSIONS.find(s => s.date === todayStr);
+            let isToday = true;
+
+            // 2. Nếu không có, tìm buổi tiếp theo gần nhất
+            if (!session) {
+                session = SESSIONS.find(s => s.date > todayStr);
+                isToday = false;
+            }
+            
+            const container = document.getElementById('session-container');
+            const card = container.querySelector('div');
+            const idEl = document.getElementById('session-id');
+            const dateEl = document.getElementById('session-date');
+            const topicEl = document.getElementById('session-topic');
+            const statusEl = document.getElementById('session-status');
+            
+            if (session) {
+                container.classList.remove('hidden');
+                card.className = isToday 
+                    ? 'sched-item ring-2 ring-indigo-500 bg-indigo-50 rounded-xl p-2 border border-gray-100 shadow-sm flex gap-3 items-center transition-all'
+                    : 'sched-item bg-white rounded-xl p-2 border border-gray-100 shadow-sm flex gap-3 items-center transition-all';
+                
+                idEl.innerText = session.id;
+                dateEl.innerText = formatDate(session.date);
+                topicEl.innerText = session.topic;
+
+                // Status Logic
+                if (isToday) {
+                    if (session.id <= 7) {
+                        const h = hanoiDate.getHours();
+                        const m = hanoiDate.getMinutes();
+                        const min = h * 60 + m;
+                        
+                        const start = 19 * 60; // 19:00
+                        const end = 21 * 60 + 30; // 21:30
+
+                        if (min < start) {
+                            statusEl.className = 'text-base font-bold text-yellow-600';
+                            statusEl.innerHTML = '<i class="fa-solid fa-hourglass-start mr-1"></i> Chưa đến giờ điểm danh (19:00)';
+                        } else if (min > end) {
+                            statusEl.className = 'text-base font-bold text-red-600';
+                            statusEl.innerHTML = '<i class="fa-solid fa-lock mr-1"></i> Đã đóng điểm danh';
+                        } else {
+                            statusEl.className = 'text-base font-bold text-green-600';
+                            statusEl.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i> Đang mở điểm danh';
+                        }
+                    } else {
+                        statusEl.className = 'text-base font-bold text-blue-600';
+                        statusEl.innerHTML = 'Buổi thông tin (Không điểm danh)';
+                    }
+                } else {
+                    const diffTime = new Date(session.date) - new Date(todayStr);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                    let timeText = diffDays === 1 ? 'Ngày mai' : `Còn ${diffDays} ngày nữa`;
+                    
+                    statusEl.className = 'text-base font-bold text-indigo-500';
+                    statusEl.innerHTML = `<i class="fa-regular fa-calendar-check mr-1"></i> ${timeText}`;
+                }
+
+                // Highlight in list
+                document.querySelectorAll('.sched-item').forEach(el => el.classList.remove('ring-2', 'ring-indigo-500', 'bg-indigo-50'));
+                const el = document.getElementById(`sess-${session.id}`);
+                if(el) el.classList.add('ring-2', 'ring-indigo-500', 'bg-indigo-50');
+
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function renderSchedule() {
+            const list = document.getElementById('schedule-list');
+            const now = new Date();
+            const todayStr = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' })).toISOString().split('T')[0];
+
+            // Define colors for sessions
+            const colors = [
+                { bg: 'bg-blue-100', text: 'text-blue-600' },
+                { bg: 'bg-green-100', text: 'text-green-600' },
+                { bg: 'bg-purple-100', text: 'text-purple-600' },
+                { bg: 'bg-orange-100', text: 'text-orange-600' },
+                { bg: 'bg-teal-100', text: 'text-teal-600' },
+                { bg: 'bg-rose-100', text: 'text-rose-600' },
+                { bg: 'bg-cyan-100', text: 'text-cyan-600' },
+                { bg: 'bg-amber-100', text: 'text-amber-600' },
+            ];
+
+            list.innerHTML = SESSIONS.map((s, index) => {
+                const isPast = s.date < todayStr;
+                const isToday = s.date === todayStr;
+                
+                const opacity = isPast ? 'opacity-60 grayscale' : '';
+                const activeClass = isToday ? 'ring-2 ring-indigo-500 bg-indigo-50' : 'bg-white';
+                const color = colors[index % colors.length];
+
+                return `
+                    <div id="sess-${s.id}" class="sched-item ${activeClass} ${opacity} rounded-xl p-2 border border-gray-100 shadow-sm flex gap-3 items-center transition-all">
+                        <div class="flex-shrink-0 w-10 h-10 ${color.bg} rounded-lg flex flex-col items-center justify-center ${color.text} font-bold">
+                            <span class="text-[9px] uppercase opacity-80">Buổi</span>
+                            <span class="text-base leading-none">${s.id}</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-center mb-0.5">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">${formatDate(s.date)}</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-gray-800 line-clamp-1 truncate">${s.topic}</h4>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- ACTIONS ---
+        async function submitAttendance() {
+            if (!API_URL) { alert("Chưa cấu hình API URL!"); return; }
+            const phone = document.getElementById('phone').value.trim();
+            if (!phone) { showModal('error', 'Thiếu thông tin', 'Vui lòng nhập số điện thoại.'); return; }
+
+            // Check if today is a session
+            const now = new Date();
+            const hanoiDate = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
+            const todayStr = hanoiDate.toISOString().split('T')[0];
+            let session = SESSIONS.find(s => s.date === todayStr);
+
+            // --- TEST MODE: Giả lập hôm nay là buổi học tiếp theo (nếu không tìm thấy) ---
+            if (!session) {
+                // Lấy buổi học gần nhất trong tương lai hoặc buổi 2 để test
+                session = SESSIONS.find(s => s.date > todayStr) || SESSIONS[1]; 
+                console.log("TEST MODE: Giả lập điểm danh cho buổi " + session.id);
+            }
+            // --------------------------------------------------------------------------
+
+            if (!session) {
+                showModal('info', 'Thông báo', 'Hôm nay không có buổi học nào.');
+                return;
+            }
+            if (session.id === 8) {
+                showModal('info', 'Thông báo', 'Buổi 8 là buổi vinh danh/chia sẻ, không cần điểm danh.');
+                return;
+            }
+
+            setLoading(true);
+            try {
+                const formData = new URLSearchParams();
+                formData.append('action', 'submit_attendance');
+                formData.append('phone', phone);
+
+                const res = await fetch(API_URL, { method: 'POST', body: formData });
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    showModal('success', 'Điểm danh thành công!', data.message, `
+                        <div>Học viên: <b>${data.data.name}</b></div>
+                        <div>Thời gian: ${data.data.time}</div>
+                        <div class="text-green-600 font-bold uppercase mt-1">${data.data.status}</div>
+                    `);
+                } else {
+                    showModal('error', 'Thất bại', data.message);
+                }
+            } catch (e) {
+                showModal('error', 'Lỗi kết nối', 'Không thể kết nối đến máy chủ.');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function checkHistory() {
+            if (!API_URL) { alert("Chưa cấu hình API URL!"); return; }
+            const phone = document.getElementById('phone').value.trim();
+            if (!phone) { showModal('error', 'Thiếu thông tin', 'Vui lòng nhập số điện thoại.'); return; }
+
+            setLoading(true);
+            try {
+                const res = await fetch(`${API_URL}?action=get_history&phone=${encodeURIComponent(phone)}`);
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    let html = '<div class="space-y-2 mt-2 max-h-60 overflow-y-auto text-left">';
+                    data.data.history.forEach(h => {
+                        const local = SESSIONS.find(s => s.id == h.session);
+                        if (!local) return;
+                        const color = h.status === 'ĐÚNG GIỜ' ? 'text-green-600' : 'text-orange-600';
+                        html += `
+                            <div class="p-2 bg-gray-50 rounded border border-gray-100 flex justify-between items-center text-xs">
+                                <div>
+                                    <div class="font-bold text-gray-800">Buổi ${h.session}: ${local.topic}</div>
+                                    <div class="text-gray-400">${formatDate(local.date)}</div>
+                                </div>
+                                <div class="font-bold ${color}">${h.status}</div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    showModal('info', `Lịch sử: ${data.data.name}`, '', html);
+                } else {
+                    showModal('error', 'Không tìm thấy', data.message);
+                }
+            } catch (e) {
+                showModal('error', 'Lỗi', 'Không thể tải dữ liệu.');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // --- HELPERS ---
+        function formatDate(isoStr) {
+            const [y, m, d] = isoStr.split('-');
+            return `${d}/${m}`;
+        }
+
+        function setLoading(isLoading) {
+            const btn = document.getElementById('btn-submit');
+            if (isLoading) {
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+                btn.disabled = true;
+                btn.classList.add('opacity-75');
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-check-to-slot"></i> <span>ĐIỂM DANH NGAY</span>';
+                btn.disabled = false;
+                btn.classList.remove('opacity-75');
+            }
+        }
+
+        function showModal(type, title, msg, html = '') {
+            const m = document.getElementById('modal');
+            const icon = document.getElementById('modal-icon');
+            
+            m.classList.remove('hidden');
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = msg;
+            
+            const det = document.getElementById('modal-details');
+            if (html) {
+                det.innerHTML = html;
+                det.classList.remove('hidden');
+            } else {
+                det.classList.add('hidden');
+            }
+
+            // Icon styling
+            m.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
+            if (type === 'success') {
+                icon.className = 'w-16 h-16 rounded-full flex items-center justify-center text-3xl text-white shadow-lg mx-auto mb-4 bg-green-500';
+                icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+            } else if (type === 'error') {
+                icon.className = 'w-16 h-16 rounded-full flex items-center justify-center text-3xl text-white shadow-lg mx-auto mb-4 bg-red-500';
+                icon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            } else {
+                icon.className = 'w-16 h-16 rounded-full flex items-center justify-center text-3xl text-white shadow-lg mx-auto mb-4 bg-blue-500';
+                icon.innerHTML = '<i class="fa-solid fa-info"></i>';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
